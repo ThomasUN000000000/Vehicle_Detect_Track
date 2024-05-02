@@ -10,12 +10,16 @@ from onemetric.cv.utils.iou import box_iou_batch
 from collections import defaultdict
 from ultralytics.utils.plotting import Annotator, colors
 from datetime import datetime
+import subprocess
 
 
 # Configuration and global constants
 VIDEO_PATH = '/path/to/video/file'
 MODEL_WEIGHTS_PATH = 'yolov8x.pt'
 FRAME_NAME = 'Your frame name'
+URL_LINK = 'Real-Time traffic live link'
+TIME_DURATION = 'Time to record'
+VIDEO_FILE = 'Original Video File'
 curr_dt = datetime.now()
 OUTPUT_FILE = "trajectory-{}.mp4".format(str(int(curr_dt.timestamp())))
 class BYTETrackerArgs:
@@ -34,6 +38,23 @@ box_annotator = BoxAnnotator(color=ColorPalette(), thickness=1, text_padding=1, 
 track_history = defaultdict(list)
 
 # Utility functions
+def download_video(url_link, time_duration, output):
+    """
+    Downloads a video from a given URL using ffmpeg.
+    """
+    command = [
+        'ffmpeg',
+        '-i', url_link,
+        '-t', str(time_duration),
+        '-c', 'copy',
+        output
+    ]
+    process = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if process.returncode == 0:
+        print("Video downloaded successfully.")
+    else:
+        print("Error downloading video:", process.stderr)
+        
 def tracks2boxes(tracks):
     """Convert track objects to bounding box format."""
     return np.array([track.tlbr for track in tracks], dtype=float)
@@ -125,4 +146,5 @@ def process_video():
 
 # Entry point of the script
 if __name__ == "__main__":
+    download_video(URL_LINK, TIME_DURATION, VIDEO_FILE)
     process_video()
