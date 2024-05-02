@@ -1,0 +1,8 @@
+numpy
+opencv-python
+torch
+torchvision
+supervision
+bytetrack
+ultralytics
+onemetric
